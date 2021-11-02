@@ -5,7 +5,7 @@ class UserDataProvider extends ChangeNotifier {
   UserData userData =
       UserData(username: "", uid: "", phonenumber: "", imageurl: "");
   void updateuserdata(UserData userdata) {
-    this.userData = userdata;
+    userData = userdata;
     notifyListeners();
   }
 }

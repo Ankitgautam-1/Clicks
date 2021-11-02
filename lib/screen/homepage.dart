@@ -2,8 +2,12 @@
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:clicks/model/user_data.dart';
+import 'package:clicks/model/videos.dart';
 import 'package:clicks/provider/user_data_provider.dart';
 import 'package:clicks/screen/login.dart';
+import 'package:clicks/screen/videos.dart';
+import 'package:clicks/services/get_video.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -20,13 +24,17 @@ class Homepage extends StatefulWidget {
   _HomepageState createState() => _HomepageState(app: app);
 }
 
-class _HomepageState extends State<Homepage> {
+class _HomepageState extends State<Homepage>
+    with AutomaticKeepAliveClientMixin {
   final FirebaseApp app;
-
+  @override
+  bool get wantKeepAlive => true;
   _HomepageState({required this.app});
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return SafeArea(
       child: Scaffold(
         key: _scaffoldKey,
@@ -74,11 +82,7 @@ class _HomepageState extends State<Homepage> {
             ),
           ),
         ),
-        body: const SingleChildScrollView(
-          child: Center(
-            child: Text('Homepage'),
-          ),
-        ),
+        body: VideosScreen(),
         drawer: Drawer(
           child: Container(
             alignment: Alignment.centerLeft,

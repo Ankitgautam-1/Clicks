@@ -129,7 +129,7 @@ class _OtpValidationState extends State<OtpValidation> {
               print('imageurl:$imageurl');
               final DatabaseReference db =
                   FirebaseDatabase(app: app).reference();
-              db.child(user!.uid).set({
+              db.child('Users').child(user!.uid).set({
                 'username': username,
                 "imageurl": imageurl,
                 "uid": user!.uid,

@@ -1,11 +1,18 @@
 // ignore_for_file: no_logic_in_create_state
 
+import 'dart:convert';
+
 import 'package:clicks/model/user_data.dart';
+import 'package:clicks/model/videos.dart';
 import 'package:clicks/provider/user_data_provider.dart';
+import 'package:clicks/provider/video_provider.dart';
 import 'package:clicks/screen/homepage.dart';
 import 'package:clicks/screen/login.dart';
+import 'package:clicks/services/get_video.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -15,12 +22,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 var uid, profileurl, username, phonenumber, email;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  List<dynamic>? data;
   FirebaseApp app = await Firebase.initializeApp();
 
+  dynamic list = await getVideos();
+  print("$list :list");
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider<UserDataProvider>(
         create: (context) => UserDataProvider(),
+      ),
+      ChangeNotifierProvider<VideoProvider>(
+        create: (context) => VideoProvider(),
       ),
     ],
     child: GetMaterialApp(
