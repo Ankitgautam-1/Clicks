@@ -5,7 +5,10 @@ import 'package:clicks/screen/playing_video.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class VideosScreen extends StatefulWidget {
   const VideosScreen({Key? key}) : super(key: key);
@@ -29,6 +32,7 @@ class _VideosScreenState extends State<VideosScreen> {
             authorUid: element.data()['author']['authorUid'],
             authorUserName: element.data()['author']['authorUsername']);
         Video video = Video(
+            views: element.data()['views'],
             videoUid: element.data()['videoUid'],
             category: element.data()['category'],
             location: element.data()['location'],
@@ -54,14 +58,14 @@ class _VideosScreenState extends State<VideosScreen> {
         if (snapshot.hasError) {
           return Container(
             color: Colors.white,
-            child: const Center(
+            child: Center(
               child: Text('Got Error while loading Data'),
             ),
           );
         } else if (snapshot.data == []) {
           return Container(
             color: Colors.white,
-            child: const Center(
+            child: Center(
               child: Text('No Vides to found Check again'),
             ),
           );
@@ -98,7 +102,7 @@ class _VideosScreenState extends State<VideosScreen> {
                       Row(
                         children: [
                           Padding(
-                            padding: const EdgeInsets.only(left: 8.0),
+                            padding: EdgeInsets.only(left: 8.0),
                             child: ClipOval(
                               child: SizedBox(
                                 width: 40,
@@ -113,10 +117,102 @@ class _VideosScreenState extends State<VideosScreen> {
                                           CircularProgressIndicator(
                                               value: downloadProgress.progress),
                                   errorWidget: (context, url, error) =>
-                                      const Icon(Icons.error),
+                                      Icon(Icons.error),
                                 ),
                               ),
                             ),
+                          ),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Container(
+                                width: MediaQuery.of(context).size.width * .8,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 8.0),
+                                      child: Text(
+                                        videos[i].title.toString().length < 23
+                                            ? videos[i].title.toString()
+                                            : videos[i]
+                                                .title
+                                                .toString()
+                                                .substring(0, 23),
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                        style: TextStyle(
+                                            fontSize: 13, color: Colors.white),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 8.0),
+                                      child: Text(
+                                        videos[i].location.toString().length <
+                                                20
+                                            ? videos[i].location.toString()
+                                            : videos[i]
+                                                .location
+                                                .toString()
+                                                .substring(0, 20),
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                        style: TextStyle(
+                                            fontSize: 13, color: Colors.white),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                              SizedBox(
+                                height: 4,
+                              ),
+                              Container(
+                                width: MediaQuery.of(context).size.width * .8,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 8.0),
+                                      child: Text(
+                                        videos[i]
+                                                    .author
+                                                    .authorUsername
+                                                    .toString()
+                                                    .length <
+                                                6
+                                            ? videos[i]
+                                                .author
+                                                .authorUsername
+                                                .toString()
+                                            : videos[i]
+                                                .author
+                                                .authorUsername
+                                                .toString()
+                                                .substring(0, 6),
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                    ),
+                                    Text(
+                                      "views:${videos[i].views == null ? "0" : videos[i].views.length}",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                    Text(
+                                      timeago.format(DateTime.parse(
+                                          videos[i].uploadTime.toString())),
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                    Text(
+                                      videos[i].category.toString(),
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            ],
                           ),
                         ],
                       ),
@@ -129,7 +225,7 @@ class _VideosScreenState extends State<VideosScreen> {
         } else {
           return Container(
             color: Colors.white,
-            child: const Center(
+            child: Center(
               child: CircularProgressIndicator(),
             ),
           );

@@ -40,6 +40,7 @@ class _HomepageState extends State<Homepage>
         key: _scaffoldKey,
         appBar: AppBar(
           actions: [
+            IconButton(onPressed: () {}, icon: Icon(Icons.search)),
             Consumer<UserDataProvider>(builder: (context, data, _) {
               return GestureDetector(
                 onTap: () {

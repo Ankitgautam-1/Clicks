@@ -24,6 +24,7 @@ Future<List> getVideos() async {
       //     author: author,
       //     videoLink: element.data()['videoLink']);
       videos.add(Video(
+          views: element.data()['views'],
           videoUid: element.data()['videoUid'],
           category: element.data()['category'],
           location: element.data()['location'],
@@ -32,6 +33,8 @@ Future<List> getVideos() async {
           uploadTime: element.data()['uploadTime'],
           author: author,
           videoLink: element.data()['videoLink']));
+      print(
+          '${element.data()['title']}has views:${element.data()['views'].length}');
       return videos;
     }
   });
