@@ -1,4 +1,4 @@
-package com.example.clicks
+package com.example.flyin
 
 import io.flutter.embedding.android.FlutterActivity
 

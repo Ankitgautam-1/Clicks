@@ -1,10 +1,14 @@
 // ignore_for_file: no_logic_in_create_state
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:camera/camera.dart';
 import 'package:clicks/model/user_data.dart';
 import 'package:clicks/model/videos.dart';
+import 'package:clicks/provider/camera_description.dart';
 import 'package:clicks/provider/user_data_provider.dart';
+import 'package:clicks/screen/location_permission.dart';
 import 'package:clicks/screen/login.dart';
+import 'package:clicks/screen/upload.dart';
 import 'package:clicks/screen/videos.dart';
 import 'package:clicks/services/get_video.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -15,6 +19,8 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:location/location.dart' as loc;
 
 class Homepage extends StatefulWidget {
   final FirebaseApp app;
@@ -27,16 +33,52 @@ class Homepage extends StatefulWidget {
 class _HomepageState extends State<Homepage>
     with AutomaticKeepAliveClientMixin {
   final FirebaseApp app;
+
   @override
   bool get wantKeepAlive => true;
   _HomepageState({required this.app});
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
+  Future<void> getPrmission() async {
+    if (!(await Permission.camera.isGranted)) {
+      Permission permission = Permission.camera;
+      var statusCamera = await permission.request();
+      if (statusCamera == PermissionStatus.granted ||
+          statusCamera == PermissionStatus.limited) {
+        List<CameraDescription> cameras;
+        cameras = await availableCameras();
+        Provider.of<CameraDescriptionProvider>(context, listen: false)
+            .updatecamera(cameras);
+        print("cameras$cameras");
+        if (await Permission.locationAlways.isGranted) {
+          cameras = await availableCameras();
+          Provider.of<CameraDescriptionProvider>(context, listen: false)
+              .updatecamera(cameras);
+          Get.to(LocationPermissoin(app: app));
+        } else {
+          cameras = await availableCameras();
+          Provider.of<CameraDescriptionProvider>(context, listen: false)
+              .updatecamera(cameras);
+          Get.to(LocationPermissoin(app: app));
+          print('Location is not granted');
+        }
+      } else {}
+    } else {
+      List<CameraDescription> cameras;
+      cameras = await availableCameras();
+      Provider.of<CameraDescriptionProvider>(context, listen: false)
+          .updatecamera(cameras);
+      print("cameras$cameras");
+      print("camera is graneted");
+      Get.to(LocationPermissoin(app: app));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
     return SafeArea(
       child: Scaffold(
+        backgroundColor: Colors.grey[900],
         key: _scaffoldKey,
         appBar: AppBar(
           actions: [
@@ -84,6 +126,12 @@ class _HomepageState extends State<Homepage>
           ),
         ),
         body: VideosScreen(),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: FloatingActionButton.small(
+            onPressed: () {
+              getPrmission();
+            },
+            child: Icon(Icons.add)),
         drawer: Drawer(
           child: Container(
             alignment: Alignment.centerLeft,

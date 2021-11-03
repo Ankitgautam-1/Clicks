@@ -32,6 +32,8 @@ class _VideosScreenState extends State<VideosScreen> {
             authorUid: element.data()['author']['authorUid'],
             authorUserName: element.data()['author']['authorUsername']);
         Video video = Video(
+            dislikes: element.data()['dislikes'],
+            likes: element.data()['likes'],
             views: element.data()['views'],
             videoUid: element.data()['videoUid'],
             category: element.data()['category'],
@@ -91,8 +93,8 @@ class _VideosScreenState extends State<VideosScreen> {
                         child: Stack(
                           children: [
                             Positioned.fill(
-                              child: Image.network(
-                                videos[i].thumbnail,
+                              child: CachedNetworkImage(
+                                imageUrl: videos[i].thumbnail,
                                 fit: BoxFit.cover,
                               ),
                             ),
@@ -197,7 +199,7 @@ class _VideosScreenState extends State<VideosScreen> {
                                       ),
                                     ),
                                     Text(
-                                      "views:${videos[i].views == null ? "0" : videos[i].views.length}",
+                                      "views: ${videos[i].views == null ? "0" : videos[i].views.length}",
                                       style: TextStyle(color: Colors.white),
                                     ),
                                     Text(

@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:clicks/model/user_data.dart';
 import 'package:clicks/model/videos.dart';
+import 'package:clicks/provider/camera_description.dart';
 import 'package:clicks/provider/user_data_provider.dart';
 import 'package:clicks/provider/video_provider.dart';
 import 'package:clicks/screen/homepage.dart';
@@ -25,12 +26,13 @@ Future<void> main() async {
   List<dynamic>? data;
   FirebaseApp app = await Firebase.initializeApp();
 
-  dynamic list = await getVideos();
-  print("$list :list");
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider<UserDataProvider>(
         create: (context) => UserDataProvider(),
+      ),
+      ChangeNotifierProvider<CameraDescriptionProvider>(
+        create: (context) => CameraDescriptionProvider(),
       ),
       ChangeNotifierProvider<VideoProvider>(
         create: (context) => VideoProvider(),

@@ -1,7 +1,10 @@
 import 'package:clicks/model/videos.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 
 class VideoProvider extends ChangeNotifier {
+  final _firestore = FirebaseFirestore.instance;
+
   Video video = Video(
       category: "category",
       location: "location",
@@ -20,5 +23,16 @@ class VideoProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updatelike(dynamic data) {
+    print('data$data');
+    this.video.likes = data;
+    notifyListeners();
+  }
+
   get videotitle => video.title;
+  get videothimbnail => video.thumbnail;
+  get videoauthor => video.author;
+  get videocategory => video.category;
+  get videolocation => video.location;
+  get videolink => video.videoLink;
 }

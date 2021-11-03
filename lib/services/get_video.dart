@@ -33,8 +33,7 @@ Future<List> getVideos() async {
           uploadTime: element.data()['uploadTime'],
           author: author,
           videoLink: element.data()['videoLink']));
-      print(
-          '${element.data()['title']}has views:${element.data()['views'].length}');
+
       return videos;
     }
   });

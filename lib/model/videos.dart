@@ -1,16 +1,19 @@
 import 'dart:convert';
 
 class Video {
-  Video(
-      {required this.category,
-      required this.location,
-      required this.thumbnail,
-      required this.title,
-      required this.uploadTime,
-      required this.author,
-      required this.videoLink,
-      required this.videoUid,
-      this.views});
+  Video({
+    required this.category,
+    required this.location,
+    required this.thumbnail,
+    required this.title,
+    required this.uploadTime,
+    required this.author,
+    required this.videoLink,
+    required this.videoUid,
+    this.views,
+    this.likes,
+    this.dislikes,
+  });
   get getthumbnail => thumbnail;
 
   get gettittle => title;
@@ -29,6 +32,8 @@ class Video {
   String videoLink;
   String videoUid;
   dynamic views;
+  dynamic likes;
+  dynamic dislikes;
 }
 
 class Author {

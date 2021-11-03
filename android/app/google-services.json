@@ -1,42 +1,41 @@
 {
   "project_info": {
-    "project_number": "572556063692",
-    "firebase_url": "https://clicks-f708c-default-rtdb.firebaseio.com",
-    "project_id": "clicks-f708c",
-    "storage_bucket": "clicks-f708c.appspot.com"
+    "project_number": "458377332654",
+    "project_id": "flyin-21b21",
+    "storage_bucket": "flyin-21b21.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:572556063692:android:92a10a1f2aabc096c2e369",
+        "mobilesdk_app_id": "1:458377332654:android:8c0a16ba93ed00fd77aa3f",
         "android_client_info": {
-          "package_name": "com.example.clicks"
+          "package_name": "com.example.flyin"
         }
       },
       "oauth_client": [
         {
-          "client_id": "572556063692-684i71vkolrgb4p1jgjl5b9o3j4a3rms.apps.googleusercontent.com",
+          "client_id": "458377332654-f5fkc2kd613e4h2n810s3ggpfld620is.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.clicks",
+            "package_name": "com.example.flyin",
             "certificate_hash": "f511b82584966a670512cae12ce9503354cd5756"
           }
         },
         {
-          "client_id": "572556063692-bjn1g096hjes7u31tcied6efnc91ulus.apps.googleusercontent.com",
+          "client_id": "458377332654-cgt4jok77bisd5nd6hhaqfou1tsjvjtg.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBmyh5qqUPvqdFU-Hmw5iCC9lyZwlM7fKI"
+          "current_key": "AIzaSyDJGLOH9FS9eb77cSMwrA6UHc-0AGqZ5uU"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "572556063692-bjn1g096hjes7u31tcied6efnc91ulus.apps.googleusercontent.com",
+              "client_id": "458377332654-cgt4jok77bisd5nd6hhaqfou1tsjvjtg.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
