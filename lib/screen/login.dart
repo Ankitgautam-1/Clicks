@@ -29,6 +29,7 @@ class _SignInState extends State<SignIn> {
   bool image = false;
   _SignInState({required this.app});
   void validation() async {
+    FocusScope.of(context).unfocus();
     if (_formkey.currentState!.validate()) {
       if (image) {
         Get.to(

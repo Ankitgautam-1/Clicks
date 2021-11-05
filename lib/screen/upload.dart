@@ -9,6 +9,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
@@ -190,21 +191,26 @@ class _UploadVideoState extends State<UploadVideo> {
                           ],
                         ),
                         mediauplaod
-                            ? TextButton.icon(
-                                label: Text("Get From Gallery"),
+                            ? ElevatedButton.icon(
+                                style: ElevatedButton.styleFrom(
+                                  primary: Colors.blue,
+                                ),
+                                label: Text(
+                                  "Get From Gallery",
+                                  style:
+                                      GoogleFonts.ubuntu(color: Colors.white),
+                                ),
                                 onPressed: getVideoFromPhone,
                                 icon: Icon(
                                   Icons.video_call,
                                   color: Colors.white,
-                                ))
+                                ),
+                              )
                             : const SizedBox.shrink(),
                         video != null
                             ? Center(
                                 child: TextButton.icon(
                                   onPressed: () {
-                                    video!
-                                        .length()
-                                        .then((value) => print('values$value'));
                                     Get.off(
                                         VideoDetails(video: video!, app: app));
                                     controller!.dispose();

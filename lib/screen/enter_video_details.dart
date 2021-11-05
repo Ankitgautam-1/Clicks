@@ -213,6 +213,7 @@ class _VideoDetailsState extends State<VideoDetails> {
                               return "Title shoud be at least 4 letters";
                             }
                           },
+                          cursorColor: Colors.grey,
                           decoration: InputDecoration(
                             border: OutlineInputBorder(),
                             enabledBorder: OutlineInputBorder(
@@ -287,6 +288,7 @@ class _VideoDetailsState extends State<VideoDetails> {
                                     Provider.of<UserDataProvider>(context,
                                             listen: false)
                                         .userData;
+
                                 await uploading(_userdata);
                               },
                               icon: Icon(Icons.video_call_rounded),
@@ -310,6 +312,7 @@ class _VideoDetailsState extends State<VideoDetails> {
   }
 
   Future<void> uploading(UserData userdata) async {
+    FocusScope.of(context).unfocus();
     if (video != null) {
       if (_image != null) {
         if (_formkey.currentState!.validate()) {
