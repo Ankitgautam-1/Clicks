@@ -45,7 +45,7 @@ class _PlayVideoState extends State<PlayVideo> {
           child: MediaQuery.of(context).orientation == Orientation.portrait
               ? Container(
                   color: Colors.grey.shade900,
-                  height: MediaQuery.of(context).size.height,
+                  height: MediaQuery.of(context).size.height * 0.96,
                   child: Consumer<VideoProvider>(
                     builder: (context, data, _) {
                       return GestureDetector(
@@ -157,89 +157,118 @@ class _PlayVideoState extends State<PlayVideo> {
                                                         .doc(data
                                                             .video.videoUid);
                                                 collectionReference.get().then(
-                                                    (DocumentSnapshot<
-                                                            Map<String,
-                                                                dynamic>>
-                                                        snapshot) {
-                                                  List dislikesonvideo =
-                                                      snapshot
-                                                          .data()!['dislikes'];
-                                                  UserData userData = Provider
-                                                          .of<UserDataProvider>(
-                                                              context,
-                                                              listen: false)
-                                                      .userData;
-                                                  if (dislikesonvideo
-                                                      .contains(userData.uid)) {
-                                                    collectionReference.update({
-                                                      "dislikes": FieldValue
-                                                          .arrayRemove(
-                                                              [userData.uid])
-                                                    });
-
-                                                    data.video.dislikes
-                                                        .remove(userData.uid);
-                                                    data.updatedislike(
-                                                        data.video.likes);
-                                                  }
-                                                  collectionReference =
-                                                      _firestore
-                                                          .collection('videos')
-                                                          .doc(data
-                                                              .video.videoUid);
-                                                  collectionReference
-                                                      .get()
-                                                      .then((DocumentSnapshot<
-                                                              Map<String,
-                                                                  dynamic>>
-                                                          snapshot) {
-                                                    List likesonvideo = snapshot
-                                                        .data()!['likes'];
+                                                  (DocumentSnapshot<
+                                                          Map<String, dynamic>>
+                                                      snapshot) {
                                                     UserData userData = Provider
                                                             .of<UserDataProvider>(
                                                                 context,
                                                                 listen: false)
                                                         .userData;
-                                                    if (likesonvideo
-                                                        .isNotEmpty) {
-                                                      print("in if block");
-                                                      if (likesonvideo.contains(
-                                                              userData.uid) &&
-                                                          likesonvideo.length ==
-                                                              1) {
-                                                        print("in if 1");
-                                                        collectionReference
-                                                            .update(
-                                                                {"likes": []});
-                                                        data.video.likes = [];
-                                                        data.updatelike(
-                                                            data.video.likes);
-                                                      } else if (likesonvideo
-                                                              .contains(userData
-                                                                  .uid) &&
-                                                          likesonvideo
-                                                              .isNotEmpty) {
-                                                        print("in if  2");
-                                                        collectionReference
-                                                            .update({
-                                                          "likes": FieldValue
-                                                              .arrayRemove([
-                                                            userData.uid
-                                                          ])
-                                                        });
 
-                                                        data.video.likes.remove(
-                                                            userData.uid);
-                                                        data.updatelike(
-                                                            data.video.likes);
-                                                      } else if (!(data
-                                                              .video.likes
-                                                              .contains(userData
-                                                                  .uid)) &&
+                                                    collectionReference =
+                                                        _firestore
+                                                            .collection(
+                                                                'videos')
+                                                            .doc(data.video
+                                                                .videoUid);
+                                                    collectionReference
+                                                        .get()
+                                                        .then((DocumentSnapshot<
+                                                                Map<String,
+                                                                    dynamic>>
+                                                            snapshot) {
+                                                      List likesonvideo =
+                                                          snapshot
+                                                              .data()!['likes'];
+                                                      UserData userData = Provider
+                                                              .of<UserDataProvider>(
+                                                                  context,
+                                                                  listen: false)
+                                                          .userData;
+                                                      if (likesonvideo
+                                                          .isNotEmpty) {
+                                                        print("in if block");
+                                                        if (likesonvideo
+                                                                .contains(
+                                                                    userData
+                                                                        .uid) &&
+                                                            likesonvideo
+                                                                    .length ==
+                                                                1) {
+                                                          print("in if 1");
+                                                          collectionReference
+                                                              .update({
+                                                            "likes": []
+                                                          });
+                                                          data.video.likes = [];
+                                                          data.updatelike(
+                                                              data.video.likes);
+                                                        } else if (likesonvideo
+                                                                .contains(
+                                                                    userData
+                                                                        .uid) &&
+                                                            likesonvideo
+                                                                .isNotEmpty) {
+                                                          print("in if  2");
+                                                          collectionReference
+                                                              .update({
+                                                            "likes": FieldValue
+                                                                .arrayRemove([
+                                                              userData.uid
+                                                            ])
+                                                          });
+
                                                           data.video.likes
-                                                                  .length ==
-                                                              0) {
-                                                        print("in if 3");
+                                                              .remove(
+                                                                  userData.uid);
+                                                          data.updatelike(
+                                                              data.video.likes);
+                                                        } else if (!(data
+                                                                .video.likes
+                                                                .contains(
+                                                                    userData
+                                                                        .uid)) &&
+                                                            data.video.likes
+                                                                    .length ==
+                                                                0) {
+                                                          print("in if 3");
+                                                          collectionReference
+                                                              .update({
+                                                            "likes": [
+                                                              userData.uid
+                                                            ]
+                                                          });
+                                                          data.video.likes = [
+                                                            userData.uid
+                                                          ];
+                                                          data.updatelike(
+                                                              data.video.likes);
+                                                        } else if (!(data
+                                                                .video.likes
+                                                                .contains(
+                                                                    userData
+                                                                        .uid)) &&
+                                                            data.video.likes
+                                                                    .length >
+                                                                0) {
+                                                          print("in if 5");
+                                                          //user has already like video
+                                                          collectionReference
+                                                              .update({
+                                                            "likes": FieldValue
+                                                                .arrayUnion([
+                                                              userData.uid
+                                                            ])
+                                                          });
+                                                          data.video.likes.add(
+                                                              userData.uid);
+                                                          data.updatelike(
+                                                              data.video.likes);
+                                                        }
+                                                      } else {
+                                                        print(
+                                                            'else block for no likes on video');
                                                         collectionReference
                                                             .update({
                                                           "likes": [
@@ -251,42 +280,10 @@ class _PlayVideoState extends State<PlayVideo> {
                                                         ];
                                                         data.updatelike(
                                                             data.video.likes);
-                                                      } else if (!(data
-                                                              .video.likes
-                                                              .contains(userData
-                                                                  .uid)) &&
-                                                          data.video.likes
-                                                                  .length >
-                                                              0) {
-                                                        print("in if 5");
-                                                        //user has already like video
-                                                        collectionReference
-                                                            .update({
-                                                          "likes": FieldValue
-                                                              .arrayUnion([
-                                                            userData.uid
-                                                          ])
-                                                        });
-                                                        data.video.likes
-                                                            .add(userData.uid);
-                                                        data.updatelike(
-                                                            data.video.likes);
                                                       }
-                                                    } else {
-                                                      print(
-                                                          'else block for no likes on video');
-                                                      collectionReference
-                                                          .update({
-                                                        "likes": [userData.uid]
-                                                      });
-                                                      data.video.likes = [
-                                                        userData.uid
-                                                      ];
-                                                      data.updatelike(
-                                                          data.video.likes);
-                                                    }
-                                                  });
-                                                });
+                                                    });
+                                                  },
+                                                );
                                               },
                                               child: Column(
                                                 children: [
@@ -321,284 +318,7 @@ class _PlayVideoState extends State<PlayVideo> {
                                               ),
                                             ),
                                             GestureDetector(
-                                              onTap: () {
-                                                var collectionReference =
-                                                    _firestore
-                                                        .collection('videos')
-                                                        .doc(data
-                                                            .video.videoUid);
-                                                collectionReference.get().then(
-                                                    (DocumentSnapshot<
-                                                            Map<String,
-                                                                dynamic>>
-                                                        snapshot) {
-                                                  List likesonvideo =
-                                                      snapshot.data()!['likes'];
-                                                  UserData userData = Provider
-                                                          .of<UserDataProvider>(
-                                                              context,
-                                                              listen: false)
-                                                      .userData;
-                                                  if (likesonvideo
-                                                      .contains(userData.uid)) {
-                                                    collectionReference.update({
-                                                      "likes": FieldValue
-                                                          .arrayRemove(
-                                                              [userData.uid])
-                                                    });
-
-                                                    data.video.likes
-                                                        .remove(userData.uid);
-                                                    data.updatelike(
-                                                        data.video.likes);
-                                                    collectionReference =
-                                                        _firestore
-                                                            .collection(
-                                                                'videos')
-                                                            .doc(data.video
-                                                                .videoUid);
-                                                    collectionReference
-                                                        .get()
-                                                        .then((DocumentSnapshot<
-                                                                Map<String,
-                                                                    dynamic>>
-                                                            snapshot) {
-                                                      List dislikesonvideo =
-                                                          snapshot.data()![
-                                                              'dislikes'];
-                                                      UserData userData = Provider
-                                                              .of<UserDataProvider>(
-                                                                  context,
-                                                                  listen: false)
-                                                          .userData;
-                                                      if (dislikesonvideo
-                                                          .isNotEmpty) {
-                                                        print("in if block");
-                                                        if (dislikesonvideo
-                                                                .contains(
-                                                                    userData
-                                                                        .uid) &&
-                                                            dislikesonvideo
-                                                                    .length ==
-                                                                1) {
-                                                          print("in if 1");
-                                                          collectionReference
-                                                              .update({
-                                                            "dislikes": []
-                                                          });
-                                                          data.video.dislikes =
-                                                              [];
-                                                          data.updatedislike(
-                                                              data.video
-                                                                  .dislikes);
-                                                        } else if (dislikesonvideo
-                                                                .contains(
-                                                                    userData
-                                                                        .uid) &&
-                                                            dislikesonvideo
-                                                                .isNotEmpty) {
-                                                          print("in if  2");
-                                                          collectionReference
-                                                              .update({
-                                                            "disikes": FieldValue
-                                                                .arrayRemove([
-                                                              userData.uid
-                                                            ])
-                                                          });
-                                                          var arr = [];
-                                                          data.video.dislikes
-                                                              .remove(
-                                                                  userData.uid);
-                                                          data.updatedislike(
-                                                              data.video
-                                                                  .dislikes);
-                                                        } else if (!(data
-                                                                .video.dislikes
-                                                                .contains(
-                                                                    userData
-                                                                        .uid)) &&
-                                                            data.video.dislikes
-                                                                    .length ==
-                                                                0) {
-                                                          print("in if 3");
-                                                          collectionReference
-                                                              .update({
-                                                            "dislikes": [
-                                                              userData.uid
-                                                            ]
-                                                          });
-                                                          data.video.dislikes =
-                                                              [userData.uid];
-                                                          data.updatedislike(
-                                                              data.video
-                                                                  .dislikes);
-                                                        } else if (!(data
-                                                                .video.dislikes
-                                                                .contains(
-                                                                    userData
-                                                                        .uid)) &&
-                                                            data.video.dislikes
-                                                                    .length >
-                                                                0) {
-                                                          print("in if 5");
-
-                                                          collectionReference
-                                                              .update({
-                                                            "dislikes":
-                                                                FieldValue
-                                                                    .arrayUnion([
-                                                              userData.uid
-                                                            ])
-                                                          });
-                                                          data.video.dislikes
-                                                              .add(
-                                                                  userData.uid);
-                                                          data.updatedislike(
-                                                              data.video
-                                                                  .dislikes);
-                                                        }
-                                                      } else {
-                                                        print(
-                                                            'else block for no likes on video');
-                                                        collectionReference
-                                                            .update({
-                                                          "dislikes": [
-                                                            userData.uid
-                                                          ]
-                                                        });
-                                                        data.video.dislikes = [
-                                                          userData.uid
-                                                        ];
-                                                        data.updatedislike(data
-                                                            .video.dislikes);
-                                                      }
-                                                    });
-                                                  } else {
-                                                    var collectionReference =
-                                                        _firestore
-                                                            .collection(
-                                                                'videos')
-                                                            .doc(data.video
-                                                                .videoUid);
-                                                    collectionReference
-                                                        .get()
-                                                        .then((DocumentSnapshot<
-                                                                Map<String,
-                                                                    dynamic>>
-                                                            snapshot) {
-                                                      List dislikesonvideo =
-                                                          snapshot.data()![
-                                                              'dislikes'];
-                                                      UserData userData = Provider
-                                                              .of<UserDataProvider>(
-                                                                  context,
-                                                                  listen: false)
-                                                          .userData;
-                                                      if (dislikesonvideo
-                                                          .isNotEmpty) {
-                                                        print("in if block");
-                                                        if (dislikesonvideo
-                                                                .contains(
-                                                                    userData
-                                                                        .uid) &&
-                                                            dislikesonvideo
-                                                                    .length ==
-                                                                1) {
-                                                          print("in if 1");
-                                                          collectionReference
-                                                              .update({
-                                                            "dislikes": []
-                                                          });
-                                                          data.video.dislikes =
-                                                              [];
-                                                          data.updatedislike(
-                                                              data.video
-                                                                  .dislikes);
-                                                        } else if (dislikesonvideo
-                                                                .contains(
-                                                                    userData
-                                                                        .uid) &&
-                                                            dislikesonvideo
-                                                                .isNotEmpty) {
-                                                          print("in if  2");
-                                                          collectionReference
-                                                              .update({
-                                                            "disikes": FieldValue
-                                                                .arrayRemove([
-                                                              userData.uid
-                                                            ])
-                                                          });
-                                                          var arr = [];
-                                                          data.video.dislikes
-                                                              .remove(
-                                                                  userData.uid);
-                                                          data.updatedislike(
-                                                              data.video
-                                                                  .dislikes);
-                                                        } else if (!(data
-                                                                .video.dislikes
-                                                                .contains(
-                                                                    userData
-                                                                        .uid)) &&
-                                                            data.video.dislikes
-                                                                    .length ==
-                                                                0) {
-                                                          print("in if 3");
-                                                          collectionReference
-                                                              .update({
-                                                            "dislikes": [
-                                                              userData.uid
-                                                            ]
-                                                          });
-                                                          data.video.dislikes =
-                                                              [userData.uid];
-                                                          data.updatedislike(
-                                                              data.video
-                                                                  .dislikes);
-                                                        } else if (!(data
-                                                                .video.dislikes
-                                                                .contains(
-                                                                    userData
-                                                                        .uid)) &&
-                                                            data.video.dislikes
-                                                                    .length >
-                                                                0) {
-                                                          print("in if 5");
-
-                                                          collectionReference
-                                                              .update({
-                                                            "dislikes":
-                                                                FieldValue
-                                                                    .arrayUnion([
-                                                              userData.uid
-                                                            ])
-                                                          });
-                                                          data.video.dislikes
-                                                              .add(
-                                                                  userData.uid);
-                                                          data.updatedislike(
-                                                              data.video
-                                                                  .dislikes);
-                                                        }
-                                                      } else {
-                                                        print(
-                                                            'else block for no likes on video');
-                                                        collectionReference
-                                                            .update({
-                                                          "dislikes": [
-                                                            userData.uid
-                                                          ]
-                                                        });
-                                                        data.video.dislikes = [
-                                                          userData.uid
-                                                        ];
-                                                        data.updatedislike(data
-                                                            .video.dislikes);
-                                                      }
-                                                    });
-                                                  }
-                                                });
-                                              },
+                                              onTap: () {},
                                               child: Column(
                                                 children: [
                                                   Icon(
