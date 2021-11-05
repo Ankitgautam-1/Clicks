@@ -1,11 +1,17 @@
 // ignore_for_file: no_logic_in_create_state
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:clicks/model/user_data.dart';
 import 'package:clicks/model/videos.dart';
+import 'package:clicks/provider/user_data_provider.dart';
+import 'package:clicks/provider/video_provider.dart';
+import 'package:clicks/screen/playing_video.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:get/get_utils/src/extensions/string_extensions.dart';
+import 'package:provider/provider.dart';
 
 class SerachBox extends StatefulWidget {
   const SerachBox({Key? key, required this.app}) : super(key: key);
@@ -78,12 +84,51 @@ class _SerachBoxState extends State<SerachBox> {
                   child: ListView.builder(
                       itemCount: _listofvideos.length,
                       itemBuilder: (context, i) {
-                        return ListTile(
-                          leading: CachedNetworkImage(
-                              width: 90,
-                              height: 30,
-                              imageUrl: _listofvideos[i].thumbnail),
-                        );
+                        return Consumer<VideoProvider>(
+                            builder: (context, data, _) {
+                          return GestureDetector(
+                            onTap: () {
+                              var collectionReference = _firestore
+                                  .collection('videos')
+                                  .doc(_listofvideos[i].videoUid);
+                              UserData userData = Provider.of<UserDataProvider>(
+                                      context,
+                                      listen: false)
+                                  .userData;
+                              if (_listofvideos[i].views != null) {
+                                if (_listofvideos[i]
+                                    .views
+                                    .contains(userData.uid)) {
+                                } else {
+                                  collectionReference.update({
+                                    "views":
+                                        FieldValue.arrayUnion([userData.uid])
+                                  });
+                                  _listofvideos[i].views.add([userData.uid]);
+                                  data.updateviews(_listofvideos[i].views);
+                                }
+                              } else {
+                                collectionReference.update({
+                                  "views": [userData.uid]
+                                });
+                                _listofvideos[i].views = [userData.uid];
+                                data.updateviews(_listofvideos[i].views);
+                              }
+                              Provider.of<VideoProvider>(context, listen: false)
+                                  .updateplayingvideo(_listofvideos[i]);
+                              Get.to(PlayVideo());
+                            },
+                            child: ListTile(
+                              leading: CachedNetworkImage(
+                                width: 100,
+                                height: 65,
+                                imageUrl: _listofvideos[i].thumbnail,
+                              ),
+                              title: Text(_listofvideos[i].title,
+                                  style: TextStyle(color: Colors.white)),
+                            ),
+                          );
+                        });
                       }),
                 )
               ],
