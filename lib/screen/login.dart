@@ -67,48 +67,49 @@ class _SignInState extends State<SignIn> {
                   ),
                 ),
                 Center(
-                    child: Stack(
-                  children: [
-                    !image
-                        ? CircleAvatar(
-                            radius: 50,
-                            foregroundImage: const AssetImage(
-                                'asset/images/profile_pic.jpg'),
-                            backgroundColor: Colors.grey[200],
-                          )
-                        : ClipOval(
-                            child: SizedBox(
-                              width: 100,
-                              height: 100,
-                              child: Image.file(
-                                _image,
-                                fit: BoxFit.cover,
+                  child: Stack(
+                    children: [
+                      !image
+                          ? CircleAvatar(
+                              radius: 50,
+                              foregroundImage: const AssetImage(
+                                  'asset/images/profile_pic.jpg'),
+                              backgroundColor: Colors.grey[200],
+                            )
+                          : ClipOval(
+                              child: SizedBox(
+                                width: 100,
+                                height: 100,
+                                child: Image.file(
+                                  _image,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.black,
                           ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Container(
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.black,
-                        ),
-                        width: 35,
-                        height: 35,
-                        child: GestureDetector(
-                          onTap: () {
-                            Get.bottomSheet(getPic());
-                          },
-                          child: const Icon(
-                            Icons.camera,
-                            color: Colors.white,
+                          width: 35,
+                          height: 35,
+                          child: GestureDetector(
+                            onTap: () {
+                              Get.bottomSheet(getPic());
+                            },
+                            child: const Icon(
+                              Icons.camera,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
-                      ),
-                    )
-                  ],
-                )),
+                      )
+                    ],
+                  ),
+                ),
                 Center(
                   child: Container(
                     color: Colors.white,

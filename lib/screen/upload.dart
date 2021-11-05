@@ -3,11 +3,13 @@
 import 'dart:io';
 
 import 'package:clicks/provider/camera_description.dart';
+import 'package:clicks/screen/enter_video_details.dart';
 import 'package:clicks/screen/homepage.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 class UploadVideo extends StatefulWidget {
@@ -27,13 +29,22 @@ class _UploadVideoState extends State<UploadVideo> {
   bool ispause = false;
   XFile? video;
   bool isflash = false;
+  bool mediauplaod = true;
+  bool backcam = true;
+  final picker = ImagePicker();
   @override
   void initState() {
     super.initState();
+    init();
+  }
 
+  void init() {
     controller = CameraController(
-        Provider.of<CameraDescriptionProvider>(context, listen: false)
-            .cameras![0],
+        backcam
+            ? Provider.of<CameraDescriptionProvider>(context, listen: false)
+                .cameras![0]
+            : Provider.of<CameraDescriptionProvider>(context, listen: false)
+                .cameras![1],
         ResolutionPreset.max,
         enableAudio: true);
     controller!.initialize().then((_) {
@@ -65,7 +76,10 @@ class _UploadVideoState extends State<UploadVideo> {
               children: [
                 !controller!.value.isInitialized
                     ? Container(
-                        child: Text('Waiting'),
+                        height: 624,
+                        color: Colors.grey.shade900,
+                        alignment: Alignment.center,
+                        child: Expanded(child: CircularProgressIndicator()),
                       )
                     : SizedBox(
                         width: MediaQuery.of(context).size.width,
@@ -84,6 +98,18 @@ class _UploadVideoState extends State<UploadVideo> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  backcam = !backcam;
+                                  init();
+                                });
+                              },
+                              child: Icon(
+                                Icons.cameraswitch_rounded,
+                                color: Colors.white,
+                              ),
+                            ),
                             GestureDetector(
                               onTap: () {
                                 if (isflash) {
@@ -110,7 +136,12 @@ class _UploadVideoState extends State<UploadVideo> {
                                 if (_isrecording) {
                                   controller!
                                       .stopVideoRecording()
-                                      .then((value) => this.video = value);
+                                      .then((value) {
+                                    this.video = value;
+                                    setState(() {
+                                      mediauplaod = false;
+                                    });
+                                  });
                                 } else {
                                   controller!.startVideoRecording();
                                 }
@@ -120,12 +151,12 @@ class _UploadVideoState extends State<UploadVideo> {
                               },
                               child: !_isrecording
                                   ? Icon(
-                                      Icons.stop_rounded,
-                                      color: Colors.red,
-                                    )
-                                  : Icon(
                                       Icons.camera,
                                       color: Colors.white,
+                                    )
+                                  : Icon(
+                                      Icons.stop_rounded,
+                                      color: Colors.red,
                                     ),
                             ),
                             GestureDetector(
@@ -158,6 +189,15 @@ class _UploadVideoState extends State<UploadVideo> {
                             )
                           ],
                         ),
+                        mediauplaod
+                            ? TextButton.icon(
+                                label: Text("Get From Gallery"),
+                                onPressed: getVideoFromPhone,
+                                icon: Icon(
+                                  Icons.video_call,
+                                  color: Colors.white,
+                                ))
+                            : const SizedBox.shrink(),
                         video != null
                             ? Center(
                                 child: TextButton.icon(
@@ -165,6 +205,9 @@ class _UploadVideoState extends State<UploadVideo> {
                                     video!
                                         .length()
                                         .then((value) => print('values$value'));
+                                    Get.off(
+                                        VideoDetails(video: video!, app: app));
+                                    controller!.dispose();
                                   },
                                   icon: Icon(Icons.video_call_rounded),
                                   label: Text("Upload"),
@@ -181,5 +224,18 @@ class _UploadVideoState extends State<UploadVideo> {
         ),
       ),
     );
+  }
+
+  Future getVideoFromPhone() async {
+    final pickedFile = await picker
+        .pickVideo(source: ImageSource.gallery)
+        .then((videoforphone) {
+      if (videoforphone != null) {
+        setState(() {
+          video = videoforphone;
+          mediauplaod = false;
+        });
+      }
+    });
   }
 }

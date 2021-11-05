@@ -1,13 +1,17 @@
 // ignore_for_file: no_logic_in_create_state
 
+import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:camera/camera.dart';
 import 'package:clicks/model/user_data.dart';
 import 'package:clicks/model/videos.dart';
 import 'package:clicks/provider/camera_description.dart';
+import 'package:clicks/provider/connectivity_provider.dart';
 import 'package:clicks/provider/user_data_provider.dart';
 import 'package:clicks/screen/location_permission.dart';
 import 'package:clicks/screen/login.dart';
+import 'package:clicks/screen/no_internet.dart';
+import 'package:clicks/screen/searchbox.dart';
 import 'package:clicks/screen/upload.dart';
 import 'package:clicks/screen/videos.dart';
 import 'package:clicks/services/get_video.dart';
@@ -36,6 +40,7 @@ class _HomepageState extends State<Homepage>
 
   @override
   bool get wantKeepAlive => true;
+  loc.Location location = loc.Location();
   _HomepageState({required this.app});
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
   Future<void> getPrmission() async {
@@ -69,7 +74,19 @@ class _HomepageState extends State<Homepage>
           .updatecamera(cameras);
       print("cameras$cameras");
       print("camera is graneted");
-      Get.to(LocationPermissoin(app: app));
+
+      if (await location.serviceEnabled()) {
+        if (await Permission.locationWhenInUse.isGranted) {
+          cameras = await availableCameras();
+          Provider.of<CameraDescriptionProvider>(context, listen: false)
+              .updatecamera(cameras);
+          Get.to(UploadVideo(app: app));
+        } else {
+          Get.to(LocationPermissoin(app: app));
+        }
+      } else {
+        Get.to(LocationPermissoin(app: app));
+      }
     }
   }
 
@@ -77,153 +94,187 @@ class _HomepageState extends State<Homepage>
   Widget build(BuildContext context) {
     super.build(context);
     return SafeArea(
-      child: Scaffold(
-        backgroundColor: Colors.grey[900],
-        key: _scaffoldKey,
-        appBar: AppBar(
-          actions: [
-            IconButton(onPressed: () {}, icon: Icon(Icons.search)),
-            Consumer<UserDataProvider>(builder: (context, data, _) {
-              return GestureDetector(
-                onTap: () {
-                  _scaffoldKey.currentState!.openDrawer();
-                },
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 0, vertical: 11),
-                  child: Container(
-                    child: CircleAvatar(
-                      radius: 28,
-                      child: ClipOval(
-                        child: SizedBox(
-                          child: CachedNetworkImage(
-                            width: 35,
-                            height: 35,
-                            placeholderFadeInDuration: Duration(seconds: 2),
-                            fit: BoxFit.cover,
-                            imageUrl: data.userData.imageurl,
-                            progressIndicatorBuilder:
-                                (context, url, downloadProgress) =>
-                                    CircularProgressIndicator(
-                                        value: downloadProgress.progress),
-                            errorWidget: (context, url, error) =>
-                                const Icon(Icons.error),
-                          ),
+      child: Consumer<DataConnection>(builder: (context, data, _) {
+        if (data.isOnline != null) {
+          return data.isOnline
+              ? Scaffold(
+                  backgroundColor: Colors.grey[900],
+                  key: _scaffoldKey,
+                  appBar: AppBar(
+                    actions: [
+                      Container(
+                        height: 10,
+                        child: OpenContainer(
+                          closedColor: Colors.grey.shade900,
+                          transitionType: ContainerTransitionType.fadeThrough,
+                          transitionDuration: Duration(milliseconds: 600),
+                          openBuilder: (context, _) {
+                            return SerachBox(app: app);
+                          },
+                          closedBuilder: (context, openserachbox) {
+                            return GestureDetector(
+                              onTap: openserachbox,
+                              child: SizedBox(
+                                height: 20,
+                                width: 30,
+                                child: Icon(
+                                  Icons.search_rounded,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       ),
-                    ),
-                  ),
-                ),
-              );
-            }),
-          ],
-          backgroundColor: Colors.grey[900],
-          leading: Center(
-            child: Text(
-              'Flyin',
-              style: GoogleFonts.ubuntu(),
-            ),
-          ),
-        ),
-        body: VideosScreen(),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: FloatingActionButton.small(
-            onPressed: () {
-              getPrmission();
-            },
-            child: Icon(Icons.add)),
-        drawer: Drawer(
-          child: Container(
-            alignment: Alignment.centerLeft,
-            width: double.infinity,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  color: Colors.grey[900],
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 12.0, horizontal: 20),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
                       Consumer<UserDataProvider>(builder: (context, data, _) {
-                        return Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            ClipOval(
-                              child: SizedBox(
-                                width: 80,
-                                height: 80,
-                                child: CachedNetworkImage(
-                                  placeholderFadeInDuration:
-                                      Duration(seconds: 2),
-                                  fit: BoxFit.cover,
-                                  imageUrl: data.userData.imageurl,
-                                  progressIndicatorBuilder:
-                                      (context, url, downloadProgress) =>
-                                          CircularProgressIndicator(
-                                              value: downloadProgress.progress),
-                                  errorWidget: (context, url, error) =>
-                                      const Icon(Icons.error),
+                        return GestureDetector(
+                          onTap: () {
+                            _scaffoldKey.currentState!.openDrawer();
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 0, vertical: 11),
+                            child: CircleAvatar(
+                              radius: 28,
+                              child: ClipOval(
+                                child: SizedBox(
+                                  child: CachedNetworkImage(
+                                    width: 35,
+                                    height: 35,
+                                    fit: BoxFit.cover,
+                                    imageUrl: data.userData.imageurl,
+                                    progressIndicatorBuilder: (context, url,
+                                            downloadProgress) =>
+                                        CircularProgressIndicator(
+                                            value: downloadProgress.progress),
+                                    errorWidget: (context, url, error) =>
+                                        const Icon(Icons.error),
+                                  ),
                                 ),
                               ),
                             ),
-                            Expanded(
-                              child: Container(
-                                padding: const EdgeInsets.only(left: 12.0),
-                                margin: EdgeInsets.only(top: 25.0),
-                                width: 150,
-                                child: Text(
-                                  data.userData.username,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  textAlign: TextAlign.left,
-                                  style: GoogleFonts.ubuntu(
-                                      color: Colors.white, fontSize: 17),
-                                ),
-                              ),
-                            )
-                          ],
+                          ),
                         );
                       }),
                     ],
+                    backgroundColor: Colors.grey[900],
+                    leading: Center(
+                      child: Text(
+                        'Flyin',
+                        style: GoogleFonts.ubuntu(),
+                      ),
+                    ),
                   ),
-                ),
-                ListTile(
-                  onTap: () {
-                    print("Go to profile");
-                  },
-                  leading: Icon(
-                    Icons.person_rounded,
-                    color: Colors.black,
+                  body: const VideosScreen(),
+                  floatingActionButtonLocation:
+                      FloatingActionButtonLocation.centerFloat,
+                  floatingActionButton: FloatingActionButton.small(
+                      onPressed: () {
+                        getPrmission();
+                      },
+                      child: Icon(Icons.add)),
+                  drawer: Drawer(
+                    child: Container(
+                      alignment: Alignment.centerLeft,
+                      width: double.infinity,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            color: Colors.grey[900],
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 12.0, horizontal: 20),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Consumer<UserDataProvider>(
+                                    builder: (context, data, _) {
+                                  return Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      ClipOval(
+                                        child: SizedBox(
+                                          width: 80,
+                                          height: 80,
+                                          child: CachedNetworkImage(
+                                            placeholderFadeInDuration:
+                                                Duration(seconds: 2),
+                                            fit: BoxFit.cover,
+                                            imageUrl: data.userData.imageurl,
+                                            progressIndicatorBuilder: (context,
+                                                    url, downloadProgress) =>
+                                                CircularProgressIndicator(
+                                                    value: downloadProgress
+                                                        .progress),
+                                            errorWidget:
+                                                (context, url, error) =>
+                                                    const Icon(Icons.error),
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: Container(
+                                          padding:
+                                              const EdgeInsets.only(left: 12.0),
+                                          margin: EdgeInsets.only(top: 25.0),
+                                          width: 150,
+                                          child: Text(
+                                            data.userData.username,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            textAlign: TextAlign.left,
+                                            style: GoogleFonts.ubuntu(
+                                                color: Colors.white,
+                                                fontSize: 17),
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  );
+                                }),
+                              ],
+                            ),
+                          ),
+                          ListTile(
+                            onTap: () {
+                              print("Go to profile");
+                            },
+                            leading: Icon(
+                              Icons.person_rounded,
+                              color: Colors.black,
+                            ),
+                            title: Text('Profile'),
+                          ),
+                          const Spacer(),
+                          TextButton.icon(
+                            style: TextButton.styleFrom(
+                                primary: Colors.black,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20.0)),
+                            label: Text(
+                              "Logout",
+                              style: GoogleFonts.ubuntu(),
+                            ),
+                            onPressed: logout,
+                            icon: const Icon(Icons.exit_to_app),
+                          )
+                        ],
+                      ),
+                    ),
                   ),
-                  title: Text('Profile'),
-                ),
-                const Spacer(),
-                TextButton.icon(
-                  style: TextButton.styleFrom(
-                      primary: Colors.black,
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0)),
-                  label: Text(
-                    "Logout",
-                    style: GoogleFonts.ubuntu(),
-                  ),
-                  onPressed: logout,
-                  icon: const Icon(Icons.exit_to_app),
                 )
-              ],
-            ),
-          ),
-        ),
-      ),
+              : NoInternet();
+        } else {
+          return NoInternet();
+        }
+      }),
     );
   }
 
   @override
   void initState() {
-    print(
-        "data here :${Provider.of<UserDataProvider>(context, listen: false).userData.imageurl}");
     super.initState();
+    Provider.of<DataConnection>(context, listen: false).getDataConnection();
   }
 
   void logout() async {

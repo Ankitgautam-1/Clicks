@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:clicks/model/user_data.dart';
 import 'package:clicks/provider/user_data_provider.dart';
 import 'package:clicks/screen/homepage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -51,7 +52,7 @@ class _OtpValidationState extends State<OtpValidation> {
   TextEditingController _4th = TextEditingController();
   TextEditingController _5th = TextEditingController();
   TextEditingController _6th = TextEditingController();
-
+  bool Isloading = false;
   FirebaseAuth auth = FirebaseAuth.instance;
   String _otp = "";
   User? user;
@@ -107,6 +108,9 @@ class _OtpValidationState extends State<OtpValidation> {
   }
 
   Future<void> verify(String otp) async {
+    setState(() {
+      Isloading = true;
+    });
     try {
       print(' ver :$verificationId');
       PhoneAuthCredential phoneAuthCredential = PhoneAuthProvider.credential(
@@ -127,6 +131,23 @@ class _OtpValidationState extends State<OtpValidation> {
             ref.putFile(image).then((taskstate) async {
               String imageurl = await ref.getDownloadURL();
               print('imageurl:$imageurl');
+              final _firestore = FirebaseFirestore.instance;
+              final videos = await _firestore
+                  .collection("videos")
+                  .where("author.authorUid", isEqualTo: user!.uid)
+                  .get()
+                  .then((value) {
+                if (value.docs.isNotEmpty) {
+                  value.docs.forEach((element) {
+                    print(
+                        "all video by this creater:${element.data()["videoUid"]}");
+                    _firestore
+                        .collection("videos")
+                        .doc(element.data()["videoUid"])
+                        .update({"author.authorProfile": imageurl});
+                  });
+                }
+              });
               final DatabaseReference db =
                   FirebaseDatabase(app: app).reference();
               db.child('Users').child(user!.uid).set({
@@ -143,7 +164,9 @@ class _OtpValidationState extends State<OtpValidation> {
                 print("Userdata class:$userData");
                 Provider.of<UserDataProvider>(context, listen: false)
                     .updateuserdata(userData);
-
+                setState(() {
+                  Isloading = false;
+                });
                 print(
                     "data from getotp :${Provider.of<UserDataProvider>(context, listen: false).userData.imageurl}");
                 SharedPreferences Sp = await SharedPreferences.getInstance();
@@ -489,6 +512,7 @@ class _OtpValidationState extends State<OtpValidation> {
                             _5th.text +
                             _6th.text;
                         print("Your otp is  $_otp");
+
                         await verify(_otp);
                       },
                       child: Text(
@@ -520,6 +544,14 @@ class _OtpValidationState extends State<OtpValidation> {
                       ),
                     ],
                   ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20),
+                    child: Isloading
+                        ? Center(
+                            child: CircularProgressIndicator(),
+                          )
+                        : Container(),
+                  )
                 ],
               ),
             ),

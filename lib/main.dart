@@ -7,6 +7,7 @@ import 'package:clicks/model/videos.dart';
 import 'package:clicks/provider/camera_description.dart';
 import 'package:clicks/provider/user_data_provider.dart';
 import 'package:clicks/provider/video_provider.dart';
+import 'package:clicks/screen/enter_video_details.dart';
 import 'package:clicks/screen/homepage.dart';
 import 'package:clicks/screen/login.dart';
 import 'package:clicks/services/get_video.dart';
@@ -15,17 +16,25 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'provider/connectivity_provider.dart';
 
 var uid, profileurl, username, phonenumber, email;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   List<dynamic>? data;
   FirebaseApp app = await Firebase.initializeApp();
-
+  SystemChrome.setPreferredOrientations(
+    [
+      DeviceOrientation.portraitUp,
+    ],
+  );
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider<UserDataProvider>(
@@ -36,6 +45,9 @@ Future<void> main() async {
       ),
       ChangeNotifierProvider<VideoProvider>(
         create: (context) => VideoProvider(),
+      ),
+      ChangeNotifierProvider<DataConnection>(
+        create: (context) => DataConnection(),
       ),
     ],
     child: GetMaterialApp(

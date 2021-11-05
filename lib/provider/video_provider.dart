@@ -29,6 +29,22 @@ class VideoProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updateviews(dynamic data) {
+    this.video.views = data;
+  }
+
+  void updatelikedislike(dynamic data) {
+    this.video.likes = data;
+    this.video.dislikes = data;
+    notifyListeners();
+  }
+
+  void updatedislike(dynamic data) {
+    print('data$data');
+    this.video.dislikes = data;
+    notifyListeners();
+  }
+
   get videotitle => video.title;
   get videothimbnail => video.thumbnail;
   get videoauthor => video.author;
