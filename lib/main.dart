@@ -1,25 +1,16 @@
 // ignore_for_file: no_logic_in_create_state
 
-import 'dart:convert';
-
 import 'package:clicks/model/user_data.dart';
-import 'package:clicks/model/videos.dart';
 import 'package:clicks/provider/camera_description.dart';
 import 'package:clicks/provider/user_data_provider.dart';
 import 'package:clicks/provider/video_provider.dart';
-import 'package:clicks/screen/enter_video_details.dart';
 import 'package:clicks/screen/homepage.dart';
 import 'package:clicks/screen/login.dart';
-import 'package:clicks/services/get_video.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -72,9 +63,16 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     checkuid().whenComplete(() async {
-      uid == null
-          ? Get.offAll(SignIn(app: app))
-          : Get.offAll(Homepage(app: app));
+      UserData userData = UserData(
+          imageurl:
+              "https://i.picsum.photos/id/668/200/200.jpg?hmac=mVqr1fc4nHFre2QMZp5cuqUKLIRSafUtWt2vwlA9jG0",
+          phonenumber: "8850945124",
+          uid: "SLQBMnVLHzOh8dT1WFQLhcKq0th1",
+          username: "Test User");
+      print("Userdata class:$userData");
+      Provider.of<UserDataProvider>(context, listen: false)
+          .updateuserdata(userData);
+      Get.offAll(() => Homepage(app: app));
     });
     super.initState();
   }

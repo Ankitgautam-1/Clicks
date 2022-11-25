@@ -94,16 +94,16 @@ class _VideosScreenState extends State<VideosScreen> {
                 }
                 Provider.of<VideoProvider>(context, listen: false)
                     .updateplayingvideo(videos[i]);
-                Get.to(PlayVideo());
+                Get.to(() => const PlayVideo());
               },
               child: Container(
                 color: Colors.grey[900],
-                height: MediaQuery.of(context).size.height * 0.3777,
+                height: 330,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Container(
-                      height: MediaQuery.of(context).size.height * 0.26,
+                      height: 250,
                       child: Stack(
                         children: [
                           Positioned.fill(

@@ -95,7 +95,7 @@ class _HomepageState extends State<Homepage>
     super.build(context);
     return SafeArea(
       child: Consumer<DataConnection>(builder: (context, data, _) {
-        if (data.isOnline != null) {
+        if (data.isOnline) {
           return data.isOnline
               ? Scaffold(
                   backgroundColor: Colors.grey[900],
@@ -246,18 +246,6 @@ class _HomepageState extends State<Homepage>
                             title: Text('Profile'),
                           ),
                           const Spacer(),
-                          TextButton.icon(
-                            style: TextButton.styleFrom(
-                                primary: Colors.black,
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 20.0)),
-                            label: Text(
-                              "Logout",
-                              style: GoogleFonts.ubuntu(),
-                            ),
-                            onPressed: logout,
-                            icon: const Icon(Icons.exit_to_app),
-                          )
                         ],
                       ),
                     ),

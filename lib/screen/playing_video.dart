@@ -359,7 +359,7 @@ class _PlayVideoState extends State<PlayVideo> {
                                               onPressed: () async {
                                                 await FlutterClipboard.copy(
                                                     data.video.videoLink);
-                                                Scaffold.of(context)
+                                                ScaffoldMessenger.of(context)
                                                     .showSnackBar(
                                                   SnackBar(
                                                     content: ScaffoldMessenger(

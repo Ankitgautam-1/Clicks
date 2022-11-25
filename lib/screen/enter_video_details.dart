@@ -248,9 +248,11 @@ class _VideoDetailsState extends State<VideoDetails> {
                               iconEnabledColor: Colors.black,
                               items: <String>[
                                 'Education',
-                                'Fun',
+                                'Comic',
                                 'Vlog',
-                                'Gameming',
+                                'Gaming',
+                                'Science',
+                                'Nature'
                               ].map<DropdownMenuItem<String>>((String value) {
                                 return DropdownMenuItem<String>(
                                   value: value,
